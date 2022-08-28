@@ -7,15 +7,14 @@ import { Logger } from 'nestjs-pino';
 import * as cookieParser from 'cookie-parser';
 
 async function setupSwager(app) {
-    const swaggerOptions = new DocumentBuilder()
-      .setTitle('TransFort')
-      .setDescription('TransFort System API description')
-      .setVersion('1.0')
-      .addBearerAuth()
-      .build();
-    const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions);
-    SwaggerModule.setup('api', app, swaggerDocument);
-  
+  const swaggerOptions = new DocumentBuilder()
+    .setTitle('TransFort')
+    .setDescription('TransFort System API description')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions);
+  SwaggerModule.setup('api', app, swaggerDocument);
 }
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: false });
