@@ -17,7 +17,7 @@ async function setupSwager(app) {
   SwaggerModule.setup('api', app, swaggerDocument);
 }
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { logger: false });
+  const app = await NestFactory.create(AppModule, { logger: true });
   app.useLogger(app.get(Logger));
   app.use(cookieParser());
   app.enableCors({
