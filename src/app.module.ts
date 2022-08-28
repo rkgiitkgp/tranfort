@@ -40,7 +40,7 @@ import { UserModule } from './users/user.module';
         return {
           name: 'default',
           type: 'postgres',
-          host: '/cloudsql/transfort:asia-south1:trasfort',
+          host: '35.244.6.118',
           port: 5432,
           username: 'postgres',
           password: 'TransFort@1234',
