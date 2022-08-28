@@ -40,10 +40,10 @@ import { UserModule } from './users/user.module';
         return {
           name: 'default',
           type: 'postgres',
-          host: 'localhost',
+          host: '/cloudsql/mystical-sweep-327220:asia-south1:trasfort',
           port: 5432,
           username: 'postgres',
-          password: 'Rakesh@123',
+          password: 'TransFort@1234',
           database: 'transfort',
           entities: ['dist/**/*.entity{ .ts,.js}'],
           synchronize: false,
