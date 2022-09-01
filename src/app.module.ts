@@ -12,6 +12,10 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/http-exception.filter';
 import { HttpModule } from '@nestjs/axios';
 import { UserModule } from './users/user.module';
+import { AuthModule } from './auth/auth.module';
+import { VehicleModule } from './vehicle/vehicle.module';
+import { LoadModule } from './load/load.module';
+import { StateCityZipcodeModule } from './state-city-zipcode/state-city-zipcode.module';
 @Module({
   imports: [
     LoggerModule.forRoot({
@@ -57,10 +61,14 @@ import { UserModule } from './users/user.module';
       imports: [ConfigModule],
       inject: [PinoLogger, ConfigService],
     }),
+    AuthModule,
     HttpModule,
     UserModule,
     ConfigModule.forRoot({ isGlobal: true }),
     CommonModule,
+    VehicleModule,
+    LoadModule,
+    StateCityZipcodeModule,
   ],
   controllers: [AppController],
   providers: [

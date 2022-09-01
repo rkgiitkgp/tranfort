@@ -3,7 +3,7 @@ name: Deploy to Cloud Run from Source
 on:
   push:
     branches:
-      - "master"
+      - 'master'
 
 env:
   PROJECT_ID: transfort
@@ -27,7 +27,6 @@ jobs:
         with:
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}' # e.g. - my-service-account@my-project.iam.gserviceaccount.com
-
 
       - name: Deploy to Cloud Run
         id: deploy

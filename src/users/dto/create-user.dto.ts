@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -10,6 +11,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { UserType } from '../constant';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -34,6 +36,6 @@ export class CreateUserDto {
   password: string;
 
   @IsNotEmpty()
-  @IsString()
-  type: string;
+  @IsEnum(() => UserType)
+  type: UserType;
 }
