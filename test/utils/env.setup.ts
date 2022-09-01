@@ -26,6 +26,5 @@ export const setupEnv = async () => {
   await client.query('create database transfort');
   await client.query('DROP EXTENSION IF EXISTS "uuid-ossp"');
   await client.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
-  await client.query("CREATE ROLE app_user LOGIN PASSWORD 'test'");
   await client.end();
 };

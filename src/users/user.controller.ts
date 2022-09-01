@@ -9,13 +9,14 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { TenantAuth } from '../auth/decorator/auth.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 
 @Controller('user')
 @ApiTags('User')
-@ApiBearerAuth()
+// @TenantAuth()
 export class UserController {
   constructor(
     @Inject(UserService)
