@@ -7,7 +7,6 @@
 const fetch = require('node-fetch');
 const { exit } = require('process');
 const { RepositoryNotTreeError } = require('typeorm');
-// const baseUrl = 'https://wms-bankend-ukokfynpeq-el.a.run.app';
 const baseUrl = process.env.baseUrl;
 import * as utils from './utils';
 
@@ -39,7 +38,7 @@ const setEmptyIds = commonIds => {
 };
 const generateJWTToken = async credentials => {
   const signin = await utils.postAndGetResponse('/auth/signin', {
-    email: credentials.email,
+    phoneNumber: credentials.phoneNumber,
     password: credentials.password,
   });
   const token = signin.token;
