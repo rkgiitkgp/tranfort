@@ -24,7 +24,7 @@ export class Load extends PlatformEntity {
   sourceAddress: LoadAddress;
 
   @Column({ type: 'uuid' })
-  sourchAddressId: string;
+  sourceAddressId: string;
 
   @ManyToOne(
     () => LoadAddress,

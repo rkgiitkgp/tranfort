@@ -65,7 +65,7 @@ export class LoadService {
       return lineItem;
     });
 
-    loadDao.sourchAddressId = (
+    loadDao.sourceAddressId = (
       await this.loadAddressService.saveLoadAddress(loadDto.sourceAddress)
     )?.id;
 
