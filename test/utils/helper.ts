@@ -42,10 +42,10 @@ const generateJWTToken = async credentials => {
     password: credentials.password,
   });
   const token = signin.token;
-  commonIds.userId = signin.id;
+  commonIds.userId = signin.user.id;
   process.env.token = token;
-  expect(signin.mobile).toBe(credentials.phoneNumber);
-  expect(signin.name).toBe(credentials.userName);
+  expect(signin.user.mobile).toBe(credentials.phoneNumber);
+  expect(signin.user.name).toBe(credentials.name);
   return token;
 };
 
@@ -74,15 +74,15 @@ export const commonData = async credentials => {
     code: `123${utils.randomNum()}`,
     cityId: commonIds.cityId,
   });
-  commonIds.vehicleId = await utils.postAndGetId('/vehicle', {
-    vehicleNumber: '1234' + utils.randomInt(),
-    fuelType: 'Petrol',
-    model: 'Truck',
-    capacity: '100 Ton',
-    age: '2 years',
-    category: 'Test',
-    containerType: 'test',
-  });
+  // commonIds.vehicleId = await utils.postAndGetId('/vehicle', {
+  //   vehicleNumber: '1234' + utils.randomInt(),
+  //   fuelType: 'Petrol',
+  //   model: 'Truck',
+  //   capacity: '100 Ton',
+  //   age: '2 years',
+  //   category: 'Test',
+  //   containerType: 'test',
+  // });
 
   return commonIds;
 };

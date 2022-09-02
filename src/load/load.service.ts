@@ -66,11 +66,11 @@ export class LoadService {
     });
 
     loadDao.destinationAddressId = (
-      await this.loadAddressService.saveLoadAddress(loadDto.sourchAddress)
+      await this.loadAddressService.saveLoadAddress(loadDto.sourceAddress)
     )?.id;
 
     loadDao.destinationAddressId = (
-      await this.loadAddressService.saveLoadAddress(loadDto.destinationAddresss)
+      await this.loadAddressService.saveLoadAddress(loadDto.destinationAddress)
     )?.id;
     loadDao.paymentTermId = loadDto.paymentTermId;
     loadDao.advancePayment = loadDto.advancePayment;
