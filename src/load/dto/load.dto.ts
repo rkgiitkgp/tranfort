@@ -22,12 +22,12 @@ export class LoadDto {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => LoadAddressDto)
-  sourchAddress: LoadAddressDto;
+  sourceAddress: LoadAddressDto;
 
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => LoadAddressDto)
-  destinationAddresss: LoadAddressDto;
+  destinationAddress: LoadAddressDto;
 
   @IsNotEmpty()
   @IsNumber()
@@ -67,11 +67,11 @@ export class LineItemDto {
   weight?: number;
 
   @IsOptional()
-  @IsEnum(() => WeightUnit)
+  @IsEnum(WeightUnit)
   weightUnit?: WeightUnit;
 
   @IsOptional()
-  @IsString()
+  @IsEnum(AdditionalMeasureUOM)
   additionalMeasureUOM?: AdditionalMeasureUOM;
 
   @IsOptional()

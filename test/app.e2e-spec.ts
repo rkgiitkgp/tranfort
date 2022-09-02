@@ -27,7 +27,7 @@ describe('AppController (e2e)', () => {
       email: userName + '@mail.com',
       phoneNumber: '963456' + utils.randomNum(),
       password: 'User@1234',
-      type: 'TRANSPORTER',
+      type: 'transporter',
     };
     await setCredentials(credentials);
     const commonIds = await commonData(credentials);
@@ -36,7 +36,7 @@ describe('AppController (e2e)', () => {
       sku: 'Test',
       weight: 20,
       weightUnit: 'kilometer',
-      additionalMeasureUOM: 'Kilometres',
+      additionalMeasureUOM: 'km',
       additionalMeasureValue2: 20,
     };
     const sourceAddress = {
