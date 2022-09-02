@@ -41,7 +41,7 @@ describe('AppController (e2e)', () => {
     };
     const sourceAddress = {
       isDefault: false,
-      addresss: 'Test Source Address',
+      address: 'Test Source Address',
       cityId: commonIds.cityId,
       stateId: commonIds.stateId,
       zipcodeId: commonIds.zipcodeId,
@@ -49,7 +49,7 @@ describe('AppController (e2e)', () => {
     };
     const destinationAddress = {
       isDefault: false,
-      addresss: 'Test Destination Address',
+      address: 'Test Destination Address',
       cityId: commonIds.cityId,
       stateId: commonIds.stateId,
       zipcodeId: commonIds.zipcodeId,
