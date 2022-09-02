@@ -33,12 +33,12 @@ export class AuthService {
   }
 
   async signIn(signInDto: SignInDto) {
-    const { email, password } = signInDto;
+    const { phoneNumber, password } = signInDto;
 
     const [user] = await this.user
       .createQueryBuilder('user')
       .andWhere('user.deleted = false')
-      .andWhere('user.email = :email', { email: email.toLocaleLowerCase() })
+      .andWhere('user.mobile = :mobile', { mobile: phoneNumber })
       .getMany();
 
     if (!user) {

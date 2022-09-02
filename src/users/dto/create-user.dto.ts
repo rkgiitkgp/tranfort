@@ -18,9 +18,9 @@ export class CreateUserDto {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsNotEmpty()
   @IsString()
@@ -36,6 +36,6 @@ export class CreateUserDto {
   password: string;
 
   @IsNotEmpty()
-  @IsEnum(() => UserType)
+  @IsEnum(UserType)
   type: UserType;
 }
