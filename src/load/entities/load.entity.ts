@@ -3,6 +3,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { LoadStatus } from '../constant';
 import { LineItem } from './line-item.entity';
 import { LoadAddress } from './load-address.entity';
+import { Booking } from './booking.entity';
 
 @Entity('load')
 export class Load extends PlatformEntity {
@@ -53,4 +54,13 @@ export class Load extends PlatformEntity {
 
   @Column()
   status: LoadStatus;
+
+  @OneToMany(
+    () => Booking,
+    booking => booking.load,
+  )
+  bookings: Booking[];
+
+  @Column({ nullable: true, type: 'uuid' })
+  assigneeId: string;
 }

@@ -16,7 +16,8 @@ import { UserService } from './user.service';
 
 @Controller('user')
 @ApiTags('User')
-// @TenantAuth()
+@TenantAuth()
+@ApiBearerAuth()
 export class UserController {
   constructor(
     @Inject(UserService)

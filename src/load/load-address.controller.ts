@@ -18,7 +18,7 @@ import { LoadAddressService } from './load-address.service';
 
 @ApiTags('Load Address')
 @Controller('load-address')
-// @TenantAuth()
+@TenantAuth()
 @ApiBearerAuth()
 export class LoadAddressController {
   constructor(

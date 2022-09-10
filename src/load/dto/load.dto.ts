@@ -78,3 +78,13 @@ export class LineItemDto {
   @IsNumber()
   additionalMeasureValue?: number;
 }
+
+export class BookLoadDto {
+  @IsNotEmpty()
+  @IsUUID()
+  loadId: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  bookingId: string;
+}

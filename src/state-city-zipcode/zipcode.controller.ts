@@ -19,7 +19,7 @@ import { PaginatedResponse } from '../common/pagination';
 
 @ApiTags('Zipcode')
 @Controller('zipcode')
-// @TenantAuth()
+@TenantAuth()
 @ApiBearerAuth()
 export class ZipcodeController {
   constructor(

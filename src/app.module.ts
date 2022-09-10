@@ -16,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
 import { VehicleModule } from './vehicle/vehicle.module';
 import { LoadModule } from './load/load.module';
 import { StateCityZipcodeModule } from './state-city-zipcode/state-city-zipcode.module';
+import { CompanyModule } from './company/company.module';
 @Module({
   imports: [
     LoggerModule.forRoot({
@@ -69,6 +70,7 @@ import { StateCityZipcodeModule } from './state-city-zipcode/state-city-zipcode.
     VehicleModule,
     LoadModule,
     StateCityZipcodeModule,
+    CompanyModule,
   ],
   controllers: [AppController],
   providers: [
