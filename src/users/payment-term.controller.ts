@@ -18,7 +18,7 @@ import { PaymentTermService } from './payment-term.service';
 
 @ApiTags('Payment Term')
 @Controller('payment-term')
-// @TenantAuth()
+@TenantAuth()
 @ApiBearerAuth()
 export class PaymentTermController {
   constructor(

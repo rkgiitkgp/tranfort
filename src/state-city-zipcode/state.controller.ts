@@ -17,7 +17,7 @@ import { StateService } from './state.service';
 
 @ApiTags('State')
 @Controller('state')
-// @TenantAuth()
+@TenantAuth()
 @ApiBearerAuth()
 export class StateController {
   constructor(

@@ -18,7 +18,7 @@ import { City } from './entities/city.entity';
 
 @ApiTags('City')
 @Controller('city')
-// @TenantAuth()
+@TenantAuth()
 @ApiBearerAuth()
 export class CityController {
   constructor(@Inject(CityService) private readonly cityService: CityService) {}

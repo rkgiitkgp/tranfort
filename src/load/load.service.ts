@@ -1,23 +1,58 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { sendError } from '../common/error.service';
 import { fillNull } from '../common/utils/repository';
 import { In, Repository } from 'typeorm';
 import { Load } from './entities/load.entity';
-import { LoadDto } from './dto/load.dto';
+import { BookLoadDto, LoadDto } from './dto/load.dto';
 import { LoadAddressService } from './load-address.service';
 import { LoadStatus } from './constant';
 import { LineItem } from './entities/line-item.entity';
+import { Booking } from './entities/booking.entity';
 
 @Injectable()
 export class LoadService {
   constructor(
     @InjectRepository(Load)
     private load: Repository<Load>,
+    @InjectRepository(Booking)
+    private booking: Repository<Booking>,
     @Inject(LoadAddressService)
     private loadAddressService: LoadAddressService,
   ) {}
 
+  async bookLoad(bookLoadDto: BookLoadDto): Promise<boolean> {
+    const [load] = await this.getLoads(1, 0, { ids: [bookLoadDto.loadId] }, [
+      'bookings',
+    ]);
+    if (!load) {
+      throw new NotFoundException('Load Not Found');
+    }
+    if (!load.bookings.find(b => b.id == bookLoadDto.bookingId)) {
+      throw new NotFoundException('Booking Not Found');
+    }
+    if (load.status !== LoadStatus.GENERATED) {
+      throw new BadRequestException('Load is Not In Generated');
+    }
+    const booking = load.bookings.find(b => b.id == bookLoadDto.bookingId);
+    const result = await this.load.update(
+      { id: load.id },
+      { assigneeId: booking.createdBy, status: LoadStatus.BOOKED },
+    );
+    if (result) {
+      await this.booking.update(
+        { loadId: load.id, id: booking.id },
+        { confirmation: true },
+      );
+      return true;
+    }
+    return false;
+  }
   async getLoads(
     take: number,
     skip: number,
@@ -25,7 +60,9 @@ export class LoadService {
       ids?: string[];
       createdBy?: string;
     },
-    relations?: Array<'sourceAddress' | 'destinationAddress' | 'lineItems'>,
+    relations?: Array<
+      'sourceAddress' | 'destinationAddress' | 'lineItems' | 'bookings'
+    >,
   ): Promise<Load[]> {
     const idFilter = filterBy.ids ? { id: In(fillNull(filterBy.ids)) } : {};
     const createdByFilter = filterBy.createdBy

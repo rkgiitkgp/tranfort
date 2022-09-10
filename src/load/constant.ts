@@ -1,6 +1,8 @@
 export enum LoadStatus {
   DRAFT = 'draft',
-  POSTED = 'posted',
+  GENERATED = 'generated',
+  CANCELLED = 'cancelled',
+  BOOKED = 'booked',
 }
 
 export enum WeightUnit {
