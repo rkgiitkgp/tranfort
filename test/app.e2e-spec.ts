@@ -63,6 +63,8 @@ describe('AppController (e2e)', () => {
       vehicleRequirement: ['sedan'],
       advancePayment: 60,
       totalPrice: 110,
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
     });
     const loads = await utils.getResponse(`/load`);
     const loadById = await utils.getResponse(`/load/${commonIds.loadId}`);
