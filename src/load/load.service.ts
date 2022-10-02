@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { sendError } from '../common/error.service';
-import { fillNull } from '../common/utils/repository';
+import { fillNull, RepoUtils } from '../common/utils/repository';
 import { In, Repository } from 'typeorm';
 import { Load } from './entities/load.entity';
 import { BookLoadDto, LoadDto } from './dto/load.dto';
@@ -14,6 +14,10 @@ import { LoadAddressService } from './load-address.service';
 import { LoadStatus } from './constant';
 import { LineItem } from './entities/line-item.entity';
 import { Booking } from './entities/booking.entity';
+import { QueryDto } from '../common/dto/query.dto';
+import { Page, PaginatedResponse } from '../common/pagination';
+import { UserService } from '../users/user.service';
+import { UserType } from '../users/constant';
 
 @Injectable()
 export class LoadService {
@@ -24,9 +28,10 @@ export class LoadService {
     private booking: Repository<Booking>,
     @Inject(LoadAddressService)
     private loadAddressService: LoadAddressService,
+    private userService: UserService,
   ) {}
 
-  async bookLoad(bookLoadDto: BookLoadDto): Promise<boolean> {
+  async assignLoad(bookLoadDto: BookLoadDto): Promise<boolean> {
     const [load] = await this.getLoads(1, 0, { ids: [bookLoadDto.loadId] }, [
       'bookings',
     ]);
@@ -40,15 +45,12 @@ export class LoadService {
       throw new BadRequestException('Load is Not In Generated');
     }
     const booking = load.bookings.find(b => b.id == bookLoadDto.bookingId);
-    const result = await this.load.update(
-      { id: load.id },
-      { assigneeId: booking.createdBy, status: LoadStatus.BOOKED },
+    const updatedBooking = await this.booking.update(
+      { loadId: load.id, id: booking.id },
+      { confirmation: true },
     );
-    if (result) {
-      await this.booking.update(
-        { loadId: load.id, id: booking.id },
-        { confirmation: true },
-      );
+    if (updatedBooking) {
+      await this.load.update({ id: load.id }, { status: LoadStatus.BOOKED });
       return true;
     }
     return false;
@@ -59,16 +61,40 @@ export class LoadService {
     filterBy: {
       ids?: string[];
       createdBy?: string;
+      status?: LoadStatus[];
     },
     relations?: Array<
-      'sourceAddress' | 'destinationAddress' | 'lineItems' | 'bookings'
+      | 'sourceAddress'
+      | 'destinationAddress'
+      | 'lineItems'
+      | 'bookings'
+      | 'user'
+      | 'bookings.user'
     >,
+    orderBy?: {
+      asc?: string[];
+      desc?: string[];
+    },
   ): Promise<Load[]> {
+    const userProfile = await this.userService.getUserProfile();
+    let createdByFilter = {};
+    let statusFilter = {};
+    if (userProfile.type == UserType.TRANSPORTER) {
+      createdByFilter = { createdBy: userProfile.id };
+    }
+    // else if (userProfile.type == UserType.TRUCK_OWNER) {
+    //   statusFilter = { status: LoadStatus.GENERATED };
+    // }
     const idFilter = filterBy.ids ? { id: In(fillNull(filterBy.ids)) } : {};
-    const createdByFilter = filterBy.createdBy
-      ? { createdBy: filterBy.createdBy }
-      : {};
-    return await this.load.find({
+    if (filterBy.createdBy) {
+      createdByFilter = { createdBy: filterBy.createdBy };
+    }
+    if (filterBy.status) {
+      statusFilter = { status: In(fillNull(filterBy.status)) };
+    }
+
+    let loads: Load[];
+    loads = await this.load.find({
       take,
       skip,
       where: [
@@ -76,10 +102,74 @@ export class LoadService {
           deleted: false,
           ...idFilter,
           ...createdByFilter,
+          ...statusFilter,
         },
       ],
       relations,
+      order: RepoUtils.generateOrderBy(orderBy),
     });
+    if (userProfile.type == UserType.TRUCK_OWNER) {
+      loads = loads.map(load => {
+        load.bookings = load.bookings.filter(
+          booking => booking.createdBy == userProfile.id,
+        );
+        return load;
+      });
+    }
+    return loads;
+  }
+
+  async getLoadList(
+    limit: {
+      take?: number;
+      page?: number;
+    },
+    filterBy: {
+      createdBy?: string;
+      status?: LoadStatus[];
+    },
+    query?: QueryDto,
+  ): Promise<PaginatedResponse> {
+    let take = limit.take ? limit.take : 20;
+    const skip = limit.page ? limit.take * (limit.page - 1) : 0;
+    if (take > 100) take = 100;
+    const userProfile = await this.userService.getUserProfile();
+    let createdByFilter = {};
+    let statusFilter = {};
+    if (userProfile.type == UserType.TRANSPORTER) {
+      createdByFilter = { createdBy: userProfile.id };
+    }
+    // else if (userProfile.type == UserType.TRUCK_OWNER) {
+    //   statusFilter = { status: LoadStatus.GENERATED };
+    // }
+    createdByFilter = filterBy.createdBy
+      ? { createdBy: filterBy.createdBy }
+      : {};
+    statusFilter = filterBy.status
+      ? { status: In(fillNull(filterBy.status)) }
+      : {};
+
+    const loadCount = await this.load.count({
+      deleted: false,
+      ...createdByFilter,
+      ...statusFilter,
+    });
+    const loads = await this.getLoads(
+      take,
+      skip,
+      { ...filterBy },
+      [
+        'bookings',
+        'destinationAddress',
+        'lineItems',
+        'sourceAddress',
+        'user',
+        'bookings.user',
+      ],
+      QueryDto.transformToQuery(query),
+    );
+    const page = new Page(await loadCount, limit.page, limit.take);
+    return new PaginatedResponse(loads, page);
   }
 
   async saveLoad(loadDto: LoadDto, id?: string): Promise<Load> {
@@ -121,6 +211,20 @@ export class LoadService {
     } catch (error) {
       sendError(error, ' load');
     }
+  }
+
+  async generateLoad(loadId: string) {
+    const [load] = await this.getLoads(1, 0, { ids: [loadId] }, []);
+    if (!load) {
+      throw new NotFoundException(`load not found`);
+    }
+    if (load.status !== LoadStatus.DRAFT) {
+      throw new BadRequestException(`load is not in DRAFT status`);
+    }
+    return await this.load.update(
+      { id: loadId },
+      { status: LoadStatus.GENERATED },
+    );
   }
 
   async deleteLoad(ids: string[]) {

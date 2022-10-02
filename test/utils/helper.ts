@@ -50,7 +50,6 @@ const generateJWTToken = async credentials => {
 };
 
 export const setCredentials = async credentials => {
-  setEmptyIds(commonIds);
   credentials = credentials ? credentials : credential;
   const userSignup = await utils.postAndGetResponse(
     '/auth/signup',

@@ -12,6 +12,8 @@ import { LoadStatus } from './constant';
 import { BookingDto } from './dto/booking.dto';
 import { Booking } from './entities/booking.entity';
 import { LoadService } from './load.service';
+import { UserService } from '../users/user.service';
+import { UserType } from '../users/constant';
 
 @Injectable()
 export class BookingService {
@@ -20,13 +22,29 @@ export class BookingService {
     private booking: Repository<Booking>,
     @Inject(LoadService)
     private loadService: LoadService,
+    private userService: UserService,
   ) {}
   async getBookings(
     take: number,
     skip: number,
-    filterBy: { ids?: string[]; loadIds?: string[] },
-    relations: Array<'load'>,
+    filterBy: { ids?: string[]; loadIds?: string[]; createdBy?: string },
+    relations: Array<
+      | 'load'
+      | 'load.user'
+      | 'load.sourceAddress'
+      | 'load.destinationAddress'
+      | 'load.lineItems'
+      | 'user'
+    >,
   ): Promise<Booking[]> {
+    const userProfile = await this.userService.getUserProfile();
+    let createdByFilter = {};
+    if (userProfile.type == UserType.TRUCK_OWNER) {
+      createdByFilter = { createdBy: userProfile.id };
+    }
+    if (filterBy.createdBy) {
+      createdByFilter = { createdBy: filterBy.createdBy };
+    }
     const idFilter = filterBy.ids ? { id: In(fillNull(filterBy.ids)) } : {};
     const loadFilter = filterBy.loadIds
       ? { loadId: In(fillNull(filterBy.loadIds)) }
@@ -61,9 +79,18 @@ export class BookingService {
       }
       bookingDao = result;
     }
-    const [load] = await this.loadService.getLoads(1, 0, {
-      ids: [bookingDto.loadId],
-    });
+    const userProfile = await this.userService.getUserProfile();
+    if (userProfile.type !== UserType.TRUCK_OWNER) {
+      throw new BadRequestException('User Does Not have booking access');
+    }
+    const [load] = await this.loadService.getLoads(
+      1,
+      0,
+      {
+        ids: [bookingDto.loadId],
+      },
+      ['bookings', 'destinationAddress', 'lineItems', 'sourceAddress', 'user'],
+    );
     if (!load) {
       throw new NotFoundException('Load Not Found');
     }

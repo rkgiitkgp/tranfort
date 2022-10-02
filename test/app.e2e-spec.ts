@@ -17,16 +17,16 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     enable();
-    await app.listen(3000);
+    await app.listen(4000);
     process.env.baseUrl = await app.getUrl();
   }, 500000);
   it('transporter', async done => {
-    const userName = 'user' + utils.randomNum();
+    const transporter = 'Transporter' + utils.randomNum();
     const credentials = {
-      name: userName,
-      email: userName + '@mail.com',
+      name: transporter,
+      email: transporter + '@mail.com',
       phoneNumber: '963456' + utils.randomNum(),
-      password: 'User@1234',
+      password: 'Transporter@1234',
       type: 'transporter',
     };
     await setCredentials(credentials);
@@ -64,6 +64,76 @@ describe('AppController (e2e)', () => {
       advancePayment: 60,
       totalPrice: 110,
     });
+    const loads = await utils.getResponse(`/load`);
+    const loadById = await utils.getResponse(`/load/${commonIds.loadId}`);
+    const loadList = await utils.postAndGetResponse(
+      `/load/list?limit=10&page=1`,
+      {
+        orderBy: [
+          {
+            name: 'createdAt',
+            order: 'DESC',
+          },
+        ],
+      },
+    );
+    const truckOwner = 'Truckowner' + utils.randomNum();
+    const credentials2 = {
+      name: truckOwner,
+      email: truckOwner + '@mail.com',
+      phoneNumber: '963456' + utils.randomNum(),
+      password: 'Truckowner@1234',
+      type: 'truck_owner',
+    };
+    await setCredentials(credentials2);
+    const publicLoadList = await utils.postAndGetResponse(
+      `/load/list?limit=10&page=1`,
+      {
+        orderBy: [
+          {
+            name: 'createdAt',
+            order: 'DESC',
+          },
+        ],
+      },
+    );
+    // const loadById = await utils.getResponse(`/load/${commonIds.loadId}`);
+
+    const postBooking = await utils.postAndGetResponse(`/booking`, {
+      loadId: loadById.id,
+      comments: 'I want this load as soon as possible',
+    });
+
+    const updatedPublicLoadList = await utils.postAndGetResponse(
+      `/load/list?limit=10&page=1`,
+      {
+        orderBy: [
+          {
+            name: 'createdAt',
+            order: 'DESC',
+          },
+        ],
+      },
+    );
+    // (logged in into transporter tenant)
+    const transporterSignIn = await utils.postAndGetResponse('/auth/signin', {
+      phoneNumber: credentials.phoneNumber,
+      password: credentials.password,
+    });
+    //token set
+    process.env.token = transporterSignIn.token;
+
+    const bookingAppliedList = await utils.postAndGetResponse(
+      `/load/list?limit=10&page=1`,
+      {
+        orderBy: [
+          {
+            name: 'createdAt',
+            order: 'DESC',
+          },
+        ],
+      },
+    );
     done();
   });
   afterAll(async () => await app.close());

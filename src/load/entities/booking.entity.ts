@@ -1,10 +1,18 @@
 import { PlatformEntity } from '../../common/platform.entity';
 import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { Load } from './load.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('booking')
 @Unique(['loadId', 'createdBy'])
 export class Booking extends PlatformEntity {
+  @ManyToOne(
+    () => User,
+    user => user.bookings,
+  )
+  @JoinColumn({ referencedColumnName: 'id', name: 'created_by' })
+  user: User;
+
   @ManyToOne(
     () => Load,
     load => load.bookings,

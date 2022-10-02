@@ -17,8 +17,6 @@ export class PlatformEntity extends ORMBaseEntity {
   public updatedAt: Date;
   @Column({ nullable: true, type: 'uuid' })
   public createdBy: string;
-  @Column({ nullable: true, type: 'uuid' })
-  public updatedBy: string;
   @Column()
   public deleted: boolean;
 
@@ -29,7 +27,6 @@ export class PlatformEntity extends ORMBaseEntity {
     this.createdAt = new Date();
     this.updatedAt = new Date();
     this.createdBy = userContext.userId;
-    this.updatedBy = userContext.userId;
     this.deleted = false;
   }
 
@@ -37,6 +34,5 @@ export class PlatformEntity extends ORMBaseEntity {
   async populateUpdateDetails(): Promise<void> {
     const userContext = await getRequestContext();
     this.updatedAt = new Date();
-    this.updatedBy = userContext.userId;
   }
 }
