@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -47,6 +48,14 @@ export class LoadDto {
   @IsNotEmpty()
   @IsNumber()
   totalPrice: number;
+
+  @IsOptional()
+  @IsDateString()
+  startDate?: Date;
+
+  @IsOptional()
+  @IsDateString()
+  endDate?: Date;
 }
 
 export class LineItemDto {

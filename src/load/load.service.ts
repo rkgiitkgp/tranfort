@@ -18,6 +18,7 @@ import { QueryDto } from '../common/dto/query.dto';
 import { Page, PaginatedResponse } from '../common/pagination';
 import { UserService } from '../users/user.service';
 import { UserType } from '../users/constant';
+import { ZipcodeService } from '../state-city-zipcode/zipcode.service';
 
 @Injectable()
 export class LoadService {
@@ -29,6 +30,7 @@ export class LoadService {
     @Inject(LoadAddressService)
     private loadAddressService: LoadAddressService,
     private userService: UserService,
+    private zipcodeServic: ZipcodeService,
   ) {}
 
   async assignLoad(bookLoadDto: BookLoadDto): Promise<boolean> {
@@ -41,9 +43,9 @@ export class LoadService {
     if (!load.bookings.find(b => b.id == bookLoadDto.bookingId)) {
       throw new NotFoundException('Booking Not Found');
     }
-    if (load.status !== LoadStatus.GENERATED) {
-      throw new BadRequestException('Load is Not In Generated');
-    }
+    // if (load.status !== LoadStatus.GENERATED) {
+    //   throw new BadRequestException('Load is Not In Generated');
+    // }
     const booking = load.bookings.find(b => b.id == bookLoadDto.bookingId);
     const updatedBooking = await this.booking.update(
       { loadId: load.id, id: booking.id },
@@ -117,6 +119,45 @@ export class LoadService {
       });
     }
     return loads;
+  }
+
+  async enrichLoad(loads: any) {
+    const zipcodeIds: Set<string> = new Set();
+    loads.map(load => {
+      if (load.destinationAddress) {
+        zipcodeIds.add(load.destinationAddress.zipcodeId);
+      }
+      if (load.sourceAddress) {
+        zipcodeIds.add(load.sourceAddress.zipcodeId);
+      }
+    });
+    const zipcodes = await this.zipcodeServic.getZipcode(
+      1000,
+      0,
+      {
+        ids: Array.from(zipcodeIds),
+      },
+      ['city', 'city.state'],
+    );
+    return loads.map(load => {
+      const destinationZipcode = zipcodes.find(
+        z => load.destinationAddress.zipcodeId == z.id,
+      );
+      const sourceZipcode = zipcodes.find(
+        z => load.sourceAddress.zipcodeId == z.id,
+      );
+      return {
+        ...load,
+        destinationAddress: {
+          ...load.destinationAddress,
+          destinationZipcode,
+        },
+        sourceAddress: {
+          ...load.sourceAddress,
+          sourceZipcode,
+        },
+      };
+    });
   }
 
   async getLoadList(
@@ -205,6 +246,8 @@ export class LoadService {
     loadDao.totalPrice = loadDto.totalPrice;
     loadDao.vehicleRequirement = loadDto.vehicleRequirement;
     loadDao.status = LoadStatus.DRAFT;
+    loadDao.startDate = loadDto.startDate;
+    loadDao.endDate = loadDto.endDate;
 
     try {
       return await this.load.save(loadDao);

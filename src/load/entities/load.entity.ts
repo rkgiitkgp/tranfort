@@ -68,4 +68,10 @@ export class Load extends PlatformEntity {
     booking => booking.load,
   )
   bookings: Booking[];
+
+  @Column({ nullable: true })
+  startDate: Date;
+
+  @Column({ nullable: true })
+  endDate: Date;
 }

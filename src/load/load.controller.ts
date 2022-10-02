@@ -35,7 +35,7 @@ export class LoadController {
   async getLoadList(
     @Body(new ValidationPipe()) query: QueryDto,
     @Query() loadFilterDto: LoadFilterDto,
-  ): Promise<PaginatedResponse> {
+  ) {
     const limit = loadFilterDto.limit;
     const page = loadFilterDto.page;
     const userIdFilter =
@@ -47,11 +47,13 @@ export class LoadController {
       statusFilter = { status: [LoadStatus.GENERATED] };
     }
 
-    return await this.loadService.getLoadList(
+    const loads = await this.loadService.getLoadList(
       { take: limit, page },
       { ...userIdFilter, ...statusFilter },
       query,
     );
+    const result = await this.loadService.enrichLoad(loads.data);
+    return [result, loads.page];
   }
 
   @Post('/assign-load')
@@ -62,15 +64,16 @@ export class LoadController {
   }
 
   @Get()
-  async getLoads(): Promise<Load[]> {
+  async getLoads(): Promise<any> {
     const result = await this.loadService.getLoads(100, 0, {}, [
+      'bookings',
+      'destinationAddress',
       'lineItems',
       'sourceAddress',
-      'destinationAddress',
-      'bookings',
       'user',
+      'bookings.user',
     ]);
-    return result;
+    return await this.loadService.enrichLoad(result);
   }
 
   @Get('/:id')
@@ -82,16 +85,16 @@ export class LoadController {
         ids: [id],
       },
       [
+        'bookings',
+        'destinationAddress',
         'lineItems',
         'sourceAddress',
-        'destinationAddress',
-        'bookings',
-        'bookings.user',
         'user',
+        'bookings.user',
       ],
     );
     if (!result) throw new NotFoundException('load not found');
-    return result;
+    return (await this.loadService.enrichLoad([result]))[0];
   }
 
   @Post()
