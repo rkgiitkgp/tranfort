@@ -88,3 +88,17 @@ export class BookLoadDto {
   @IsUUID()
   bookingId: string;
 }
+
+export class LoadFilterDto {
+  @IsNotEmpty()
+  limit: number;
+
+  @IsNotEmpty()
+  page: number;
+
+  @IsOptional()
+  createdBy?: string;
+
+  @IsOptional()
+  publicLoad?: string;
+}

@@ -4,9 +4,17 @@ import { LoadStatus } from '../constant';
 import { LineItem } from './line-item.entity';
 import { LoadAddress } from './load-address.entity';
 import { Booking } from './booking.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('load')
 export class Load extends PlatformEntity {
+  @ManyToOne(
+    () => User,
+    user => user.loads,
+  )
+  @JoinColumn({ referencedColumnName: 'id', name: 'created_by' })
+  user: User;
+
   @OneToMany(
     () => LineItem,
     loadItem => loadItem.load,
@@ -60,7 +68,4 @@ export class Load extends PlatformEntity {
     booking => booking.load,
   )
   bookings: Booking[];
-
-  @Column({ nullable: true, type: 'uuid' })
-  assigneeId: string;
 }

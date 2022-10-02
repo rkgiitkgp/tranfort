@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { fillNull, RepoUtils } from '../common/utils/repository';
 import { In, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { getRequestContext } from '../common/request.context';
 
 @Injectable()
 export class UserService {
@@ -52,6 +53,13 @@ export class UserService {
       relations,
       order: RepoUtils.generateOrderBy(orderBy),
     });
+  }
+
+  async getUserProfile(): Promise<User> {
+    const requestContext = await getRequestContext();
+    const [user] = await this.getUser(1, 0, { ids: [requestContext.userId] });
+    if (!user) throw new NotFoundException('user not found');
+    return user;
   }
   async deleteUser(ids: string[]) {
     return await this.user.update(

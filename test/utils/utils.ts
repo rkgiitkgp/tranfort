@@ -8,8 +8,7 @@ export const phoneNumber = () =>
 
 export const randomInt = () => Math.ceil(Math.random() * 9999);
 
-const getBaseUrl = () =>
-  (process.env.baseUrl = 'https://truck-app-hokn2gj3ta-el.a.run.app');
+const getBaseUrl = () => (process.env.baseUrl = 'http://localhost:3000');
 // https://truck-app-hokn2gj3ta-el.a.run.app
 // http://localhost:3000
 
