@@ -34,10 +34,8 @@ describe('AppController (e2e)', () => {
     const lineItem = {
       productName: 'Test',
       sku: 'Test',
-      weight: 20,
-      weightUnit: 'kilometer',
-      additionalMeasureUOM: 'km',
-      additionalMeasureValue2: 20,
+      uom: 'tonnes',
+      value: 20,
     };
     const sourceAddress = {
       isDefault: false,
@@ -60,7 +58,15 @@ describe('AppController (e2e)', () => {
       sourceAddress,
       destinationAddress,
       priceRate: 100,
-      vehicleRequirement: ['sedan'],
+      vehicleRequirement: {
+        vehicleType: 'open_body_truck',
+        subVehicleType: 'box_body',
+        numberOfWheels: [
+          {
+            number: 10,
+          },
+        ],
+      },
       advancePayment: 60,
       totalPrice: 110,
       startDate: new Date().toISOString(),

@@ -1,28 +1,25 @@
 export enum LoadStatus {
-  DRAFT = 'draft',
   GENERATED = 'generated',
   CANCELLED = 'cancelled',
   BOOKED = 'booked',
 }
 
-export enum WeightUnit {
-  gm = 'gm',
-  kg = 'kg',
-  pound = 'pound',
-  kilometer = 'kilometer',
+export enum VehicleType {
+  OPEN_BODY_TRUCK = 'open_body_truck',
+  DUMBER_HEAVY = 'dumber_heavy',
+  TRAILER = 'traler',
+}
+export enum SubVehicleType {
+  BOX_BODY = 'box_body',
+  FLAT_BED = 'flat_bed',
 }
 
-export enum AdditionalMeasureUOM {
-  Number = 'No.',
-  Piece = 'piece',
-  Drum = 'drum',
-  Gallon = 'gallon',
-  Grams = 'gm',
-  Kilograms = 'kg',
-  Pound = 'pound',
-  Kilometres = 'km',
-  Meter = 'meter',
-  Inch = 'inch',
-  Foot = 'foot',
-  Each = 'Ea.',
+export interface NumberOfWheels {
+  number: number;
+}
+
+export interface VehicleRequirement {
+  vehicleType: VehicleType;
+  subVehicleType: SubVehicleType;
+  numberOfWheels: NumberOfWheels[];
 }

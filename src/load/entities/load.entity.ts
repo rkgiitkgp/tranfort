@@ -1,6 +1,6 @@
 import { PlatformEntity } from '../../common/platform.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { LoadStatus } from '../constant';
+import { LoadStatus, VehicleRequirement } from '../constant';
 import { LineItem } from './line-item.entity';
 import { LoadAddress } from './load-address.entity';
 import { Booking } from './booking.entity';
@@ -48,8 +48,8 @@ export class Load extends PlatformEntity {
   @Column({ nullable: true, type: 'float' })
   priceRate: number;
 
-  @Column('text', { array: true, default: [] })
-  vehicleRequirement: string[];
+  @Column({ type: 'jsonb', nullable: true })
+  vehicleRequirement: VehicleRequirement;
 
   @Column({ name: 'payment_term_id', nullable: true, type: 'uuid' })
   paymentTermId: string;
