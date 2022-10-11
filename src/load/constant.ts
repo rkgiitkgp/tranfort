@@ -4,6 +4,18 @@ export enum LoadStatus {
   BOOKED = 'booked',
 }
 
+export enum UnitOfMeasurement {
+  Number = 'No.',
+  Piece = 'piece',
+  Grams = 'gm',
+  Kilograms = 'kg',
+  Pound = 'pound',
+  Kilometres = 'km',
+  Meter = 'meter',
+  Tonnes = 'tonnes',
+  kilometer = 'kilometer',
+}
+
 export enum VehicleType {
   OPEN_BODY_TRUCK = 'open_body_truck',
   DUMBER_HEAVY = 'dumber_heavy',

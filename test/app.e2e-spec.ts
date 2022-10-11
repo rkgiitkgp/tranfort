@@ -68,6 +68,7 @@ describe('AppController (e2e)', () => {
         ],
       },
       advancePayment: 60,
+      advanceInPercentage: 10,
       totalPrice: 110,
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),

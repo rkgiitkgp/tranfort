@@ -58,6 +58,9 @@ export class Load extends PlatformEntity {
   advancePayment: number;
 
   @Column({ nullable: true, type: 'float' })
+  advanceInPercentage: number;
+
+  @Column({ nullable: true, type: 'float' })
   totalPrice: number;
 
   @Column()

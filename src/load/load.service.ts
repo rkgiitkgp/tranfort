@@ -238,6 +238,7 @@ export class LoadService {
     )?.id;
     loadDao.paymentTermId = loadDto.paymentTermId;
     loadDao.advancePayment = loadDto.advancePayment;
+    loadDao.advanceInPercentage = loadDto.advanceInPercentage;
     loadDao.priceRate = loadDto.priceRate;
     loadDao.totalPrice = loadDto.totalPrice;
     loadDao.vehicleRequirement = loadDto.vehicleRequirement;

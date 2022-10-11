@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { PlatformEntity } from '../../common/platform.entity';
-import { Load } from './load.entity';
 import { UnitOfMeasurement } from '../constant';
+import { Load } from './load.entity';
 
 @Entity('line_item')
 export class LineItem extends PlatformEntity {

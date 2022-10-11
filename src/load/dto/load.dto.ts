@@ -10,12 +10,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import {
-  SubVehicleType,
-  UnitOfMeasurement,
-  VehicleRequirement,
-  VehicleType,
-} from '../constant';
+import { SubVehicleType, UnitOfMeasurement, VehicleType } from '../constant';
 import { LoadAddressDto } from './load-address.dto';
 export class NumberOfWheels {
   number: number;
@@ -53,9 +48,13 @@ export class LoadDto {
   @IsUUID()
   paymentTermId?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  advancePayment: number;
+  advancePayment?: number;
+
+  @IsOptional()
+  @IsNumber()
+  advanceInPercentage?: number;
 
   @IsNotEmpty()
   @IsNumber()
@@ -83,11 +82,11 @@ export class LineItemDto {
   @IsString()
   sku?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(UnitOfMeasurement)
   uom?: UnitOfMeasurement;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   value?: number;
 }
