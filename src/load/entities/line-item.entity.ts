@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { PlatformEntity } from '../../common/platform.entity';
+import { UnitOfMeasurement } from '../constant';
 import { Load } from './load.entity';
-import { AdditionalMeasureUOM, WeightUnit } from '../constant';
 
 @Entity('line_item')
 export class LineItem extends PlatformEntity {
@@ -18,18 +18,12 @@ export class LineItem extends PlatformEntity {
   @Column()
   productName: string;
 
-  @Column()
+  @Column({ nullable: true })
   sku: string;
 
-  @Column({ nullable: true, type: 'float' })
-  weight: number;
-
   @Column({ nullable: true })
-  weightUnit: WeightUnit;
-
-  @Column({ nullable: true })
-  additionalMeasureUOM?: AdditionalMeasureUOM;
+  uom?: UnitOfMeasurement;
 
   @Column({ nullable: true, type: 'float' })
-  additionalMeasureValue?: number;
+  value?: number;
 }

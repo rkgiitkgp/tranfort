@@ -46,6 +46,16 @@ export class LoadController {
     if (loadFilterDto.publicLoad) {
       statusFilter = { status: [LoadStatus.GENERATED] };
     }
+    if (loadFilterDto?.activeLoad == 'true') {
+      statusFilter = {
+        staus: [LoadStatus.GENERATED, LoadStatus.BOOKED],
+      };
+    }
+    if (loadFilterDto?.inActiveLoad == 'true') {
+      statusFilter = {
+        staus: [LoadStatus.CANCELLED],
+      };
+    }
 
     const loads = await this.loadService.getLoadList(
       { take: limit, page },

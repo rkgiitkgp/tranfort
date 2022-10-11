@@ -10,9 +10,16 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
-import { AdditionalMeasureUOM, WeightUnit } from '../constant';
+import { SubVehicleType, UnitOfMeasurement, VehicleType } from '../constant';
 import { LoadAddressDto } from './load-address.dto';
-
+export class NumberOfWheels {
+  number: number;
+}
+export class VehicleRequirementDto {
+  vehicleType: VehicleType;
+  subVehicleType: SubVehicleType;
+  numberOfWheels: NumberOfWheels[];
+}
 export class LoadDto {
   @IsNotEmpty()
   @IsArray()
@@ -35,15 +42,19 @@ export class LoadDto {
   priceRate: number;
 
   @IsNotEmpty()
-  vehicleRequirement: string[];
+  vehicleRequirement: VehicleRequirementDto;
 
   @IsOptional()
   @IsUUID()
   paymentTermId?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  advancePayment: number;
+  advancePayment?: number;
+
+  @IsOptional()
+  @IsNumber()
+  advanceInPercentage?: number;
 
   @IsNotEmpty()
   @IsNumber()
@@ -56,6 +67,10 @@ export class LoadDto {
   @IsOptional()
   @IsDateString()
   endDate?: Date;
+
+  @IsOptional()
+  @IsString()
+  additionalNotes: string;
 }
 
 export class LineItemDto {
@@ -67,25 +82,17 @@ export class LineItemDto {
   @IsString()
   productName: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  sku: string;
+  sku?: string;
+
+  @IsOptional()
+  @IsEnum(UnitOfMeasurement)
+  uom?: UnitOfMeasurement;
 
   @IsOptional()
   @IsNumber()
-  weight?: number;
-
-  @IsOptional()
-  @IsEnum(WeightUnit)
-  weightUnit?: WeightUnit;
-
-  @IsOptional()
-  @IsEnum(AdditionalMeasureUOM)
-  additionalMeasureUOM?: AdditionalMeasureUOM;
-
-  @IsOptional()
-  @IsNumber()
-  additionalMeasureValue?: number;
+  value?: number;
 }
 
 export class BookLoadDto {
@@ -110,4 +117,10 @@ export class LoadFilterDto {
 
   @IsOptional()
   publicLoad?: string;
+
+  @IsOptional()
+  activeLoad?: string;
+
+  @IsOptional()
+  inActiveLoad?: string;
 }

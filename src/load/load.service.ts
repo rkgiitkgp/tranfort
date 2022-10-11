@@ -43,9 +43,9 @@ export class LoadService {
     if (!load.bookings.find(b => b.id == bookLoadDto.bookingId)) {
       throw new NotFoundException('Booking Not Found');
     }
-    // if (load.status !== LoadStatus.GENERATED) {
-    //   throw new BadRequestException('Load is Not In Generated');
-    // }
+    if (load.status !== LoadStatus.GENERATED) {
+      throw new BadRequestException('Load is Not In Generated');
+    }
     const booking = load.bookings.find(b => b.id == bookLoadDto.bookingId);
     const updatedBooking = await this.booking.update(
       { loadId: load.id, id: booking.id },
@@ -179,10 +179,9 @@ export class LoadService {
     let statusFilter = {};
     if (userProfile.type == UserType.TRANSPORTER) {
       createdByFilter = { createdBy: userProfile.id };
+    } else if (userProfile.type == UserType.TRUCK_OWNER) {
+      statusFilter = { status: LoadStatus.GENERATED };
     }
-    // else if (userProfile.type == UserType.TRUCK_OWNER) {
-    //   statusFilter = { status: LoadStatus.GENERATED };
-    // }
     createdByFilter = filterBy.createdBy
       ? { createdBy: filterBy.createdBy }
       : {};
@@ -225,11 +224,8 @@ export class LoadService {
     loadDao.lineItems = loadDto.lineItems.map(i => {
       const lineItem = new LineItem();
       lineItem.productName = i.productName;
-      lineItem.sku = i.sku;
-      lineItem.weight = i.weight;
-      lineItem.weightUnit = i.weightUnit;
-      lineItem.additionalMeasureUOM = i.additionalMeasureUOM;
-      lineItem.additionalMeasureValue = i.additionalMeasureValue;
+      lineItem.uom = i.uom;
+      lineItem.value = i.value;
       return lineItem;
     });
 
@@ -242,32 +238,20 @@ export class LoadService {
     )?.id;
     loadDao.paymentTermId = loadDto.paymentTermId;
     loadDao.advancePayment = loadDto.advancePayment;
+    loadDao.advanceInPercentage = loadDto.advanceInPercentage;
     loadDao.priceRate = loadDto.priceRate;
     loadDao.totalPrice = loadDto.totalPrice;
     loadDao.vehicleRequirement = loadDto.vehicleRequirement;
-    loadDao.status = LoadStatus.DRAFT;
+    loadDao.status = LoadStatus.GENERATED;
     loadDao.startDate = loadDto.startDate;
     loadDao.endDate = loadDto.endDate;
+    loadDao.additionalNotes = loadDto.additionalNotes;
 
     try {
       return await this.load.save(loadDao);
     } catch (error) {
       sendError(error, ' load');
     }
-  }
-
-  async generateLoad(loadId: string) {
-    const [load] = await this.getLoads(1, 0, { ids: [loadId] }, []);
-    if (!load) {
-      throw new NotFoundException(`load not found`);
-    }
-    if (load.status !== LoadStatus.DRAFT) {
-      throw new BadRequestException(`load is not in DRAFT status`);
-    }
-    return await this.load.update(
-      { id: loadId },
-      { status: LoadStatus.GENERATED },
-    );
   }
 
   async deleteLoad(ids: string[]) {
