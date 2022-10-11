@@ -67,6 +67,10 @@ export class LoadDto {
   @IsOptional()
   @IsDateString()
   endDate?: Date;
+
+  @IsOptional()
+  @IsString()
+  additionalNotes: string;
 }
 
 export class LineItemDto {

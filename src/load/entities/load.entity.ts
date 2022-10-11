@@ -77,4 +77,7 @@ export class Load extends PlatformEntity {
 
   @Column({ nullable: true })
   endDate: Date;
+
+  @Column({ nullable: true })
+  additionalNotes: string;
 }

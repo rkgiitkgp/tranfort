@@ -245,6 +245,7 @@ export class LoadService {
     loadDao.status = LoadStatus.GENERATED;
     loadDao.startDate = loadDto.startDate;
     loadDao.endDate = loadDto.endDate;
+    loadDao.additionalNotes = loadDto.additionalNotes;
 
     try {
       return await this.load.save(loadDao);

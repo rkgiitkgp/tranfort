@@ -72,6 +72,7 @@ describe('AppController (e2e)', () => {
       totalPrice: 110,
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
+      additionalNotes: 'abc',
     });
     const loads = await utils.getResponse(`/load`);
     const loadById = await utils.getResponse(`/load/${commonIds.loadId}`);
