@@ -37,7 +37,7 @@ export class LoadDto {
   @Type(() => LoadAddressDto)
   destinationAddress: LoadAddressDto;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   priceRate: number;
 
@@ -56,7 +56,7 @@ export class LoadDto {
   @IsNumber()
   advanceInPercentage?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   totalPrice: number;
 
