@@ -1,19 +1,18 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StateCityZipcodeModule } from '../state-city-zipcode/state-city-zipcode.module';
-import { CompanyAddressController } from './company-address.controller';
-import { CompanyAddressService } from './company-address.service';
 import { CompanyController } from './company.controller';
 import { CompanyService } from './company.service';
-import { CompanyAddress } from './entities/company-address.entity';
 import { Company } from './entities/company.entity';
+import { CommonModule } from '../common/common.module';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Company, CompanyAddress]),
+    TypeOrmModule.forFeature([Company]),
+    forwardRef(() => CommonModule),
     StateCityZipcodeModule,
   ],
-  controllers: [CompanyController, CompanyAddressController],
-  providers: [CompanyService, CompanyAddressService],
+  controllers: [CompanyController],
+  providers: [CompanyService],
   exports: [CompanyService],
 })
 export class CompanyModule {}

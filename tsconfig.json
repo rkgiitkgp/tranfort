@@ -11,9 +11,9 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "moduleResolution": "node",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "moduleResolution": "node"
+    // "paths": {
+    //       "@/*": ["./src/*"]
+    //     }
   }
 }

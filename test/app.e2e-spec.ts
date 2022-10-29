@@ -77,7 +77,6 @@ describe('AppController (e2e)', () => {
       endDate: new Date().toISOString(),
       additionalNotes: 'abc',
     });
-    expect(commonIds.loadId).toBe(String);
     const loads = await utils.getResponse(`/load`);
     expect(loads.length).toBe(1);
     const loadById = await utils.getResponse(`/load/${commonIds.loadId}`);

@@ -1,9 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Company } from './company.entity';
-import { PlatformEntity } from '../../common/platform.entity';
+import { Company } from '../../company/entities/company.entity';
+import { AddressType } from '../constant';
+import { PlatformEntity } from '../platform.entity';
 
-@Entity({ name: 'company_address' })
-export class CompanyAddress extends PlatformEntity {
+@Entity({ name: 'address' })
+export class Address extends PlatformEntity {
   @Column({ default: false })
   isDefault: boolean;
 
@@ -23,9 +24,12 @@ export class CompanyAddress extends PlatformEntity {
     () => Company,
     company => company.companyAddresses,
   )
-  @JoinColumn()
+  @JoinColumn({ referencedColumnName: 'id', name: 'entity_id' })
   company: Company;
 
   @Column()
-  companyId: string;
+  entityId: string;
+
+  @Column({ nullable: true })
+  type: AddressType;
 }

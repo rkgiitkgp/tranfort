@@ -1,6 +1,6 @@
 import { PlatformEntity } from '../../common/platform.entity';
 import { Column, Entity, JoinColumn, OneToMany } from 'typeorm';
-import { CompanyAddress } from './company-address.entity';
+import { Address } from '../../common/entities/address.entity';
 
 @Entity('company')
 export class Company extends PlatformEntity {
@@ -10,15 +10,12 @@ export class Company extends PlatformEntity {
   @Column({ unique: true })
   panNumber: string;
 
-  @Column()
-  companyAddressId: string;
-
   @OneToMany(
-    () => CompanyAddress,
+    () => Address,
     companyAddress => companyAddress.company,
   )
   @JoinColumn()
-  companyAddresses: CompanyAddress[];
+  companyAddresses: Address[];
 
   @Column({ nullable: true })
   description: string;
