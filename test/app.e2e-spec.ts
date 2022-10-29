@@ -17,10 +17,11 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     enable();
-    await app.listen(4000);
+    await app.listen(3000);
     process.env.baseUrl = await app.getUrl();
   }, 500000);
   it('transporter', async done => {
+    //sign-up: Transporter
     const transporter = 'Transporter' + utils.randomNum();
     const credentials = {
       name: transporter,
@@ -53,6 +54,8 @@ describe('AppController (e2e)', () => {
       zipcodeId: commonIds.zipcodeId,
       country: 'India',
     };
+
+    //Post a load
     commonIds.loadId = await utils.postAndGetId('/load', {
       lineItems: [lineItem],
       sourceAddress,
@@ -74,8 +77,12 @@ describe('AppController (e2e)', () => {
       endDate: new Date().toISOString(),
       additionalNotes: 'abc',
     });
+    expect(commonIds.loadId).toBe(String);
     const loads = await utils.getResponse(`/load`);
+    expect(loads.length).toBe(1);
     const loadById = await utils.getResponse(`/load/${commonIds.loadId}`);
+    expect(loadById.bookings.length).toBe(0);
+    expect(loadById.status).toBe('generated');
     const loadList = await utils.postAndGetResponse(
       `/load/list?limit=10&page=1`,
       {
@@ -87,6 +94,9 @@ describe('AppController (e2e)', () => {
         ],
       },
     );
+    expect(loadList[0].length).toBe(1);
+    expect(loadList[1]).toBeInstanceOf(Object);
+    //signUp: Truck Owner
     const truckOwner = 'Truckowner' + utils.randomNum();
     const credentials2 = {
       name: truckOwner,
@@ -107,7 +117,9 @@ describe('AppController (e2e)', () => {
         ],
       },
     );
-    // const loadById = await utils.getResponse(`/load/${commonIds.loadId}`);
+    const loadById_truckOwner = await utils.getResponse(
+      `/load/${commonIds.loadId}`,
+    );
 
     const postBooking = await utils.postAndGetResponse(`/booking`, {
       loadId: loadById.id,
