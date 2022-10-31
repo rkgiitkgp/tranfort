@@ -1,31 +1,15 @@
-import { IsNotEmpty, IsString } from 'class-validator';
-
-export class VehicleDto {
-  @IsNotEmpty()
-  @IsString()
+export interface VehicleDto {
   vehicleNumber: string;
 
-  @IsNotEmpty()
-  @IsString()
   fuelType: string;
 
-  @IsNotEmpty()
-  @IsString()
   model: string;
 
-  @IsNotEmpty()
-  @IsString()
   capacity: string;
 
-  @IsNotEmpty()
-  @IsString()
-  age: string;
+  // age: string;
 
-  @IsNotEmpty()
-  @IsString()
-  category: string;
+  // category: string;
 
-  @IsNotEmpty()
-  @IsString()
-  containerType: string;
+  // containerType: string;
 }

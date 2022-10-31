@@ -20,6 +20,7 @@ import { LoadStatus } from './constant';
 import { BookLoadDto, LoadDto, LoadFilterDto } from './dto/load.dto';
 import { Load } from './entities/load.entity';
 import { LoadService } from './load.service';
+import { UpdateResult } from 'typeorm';
 
 @ApiTags('Load')
 @Controller('load')
@@ -30,6 +31,11 @@ export class LoadController {
     @Inject(LoadService)
     private loadService: LoadService,
   ) {}
+
+  @Post('/update-status/:id')
+  async updateStatus(@Param('id') id: string): Promise<UpdateResult> {
+    return await this.loadService.updateLoadStatus(id, LoadStatus.BOOKED);
+  }
 
   @Post('/list')
   async getLoadList(

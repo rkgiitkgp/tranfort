@@ -7,12 +7,14 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { fillNull } from '../common/utils/repository';
 import { In, Repository } from 'typeorm';
-import { LoadStatus } from './constant';
 import { LoadService } from './load.service';
 import { UserService } from '../users/user.service';
 import { UserType } from '../users/constant';
 import { Challan } from './entities/challan.entity';
 import { ChallanDto } from './dto/challan.dto';
+import { BookingService } from './booking.service';
+import { ChallanLineItem } from './entities/challan-line-item.entity';
+import { ChallanEnum } from './constant';
 
 @Injectable()
 export class ChallanService {
@@ -21,6 +23,8 @@ export class ChallanService {
     private challan: Repository<Challan>,
     @Inject(LoadService)
     private loadService: LoadService,
+    @Inject(BookingService)
+    private bookingService: BookingService,
     private userService: UserService,
   ) {}
   async getChallan(
@@ -65,7 +69,7 @@ export class ChallanService {
         [],
       );
       if (!result) {
-        throw new NotFoundException('Load Not Found');
+        throw new NotFoundException('Challan Not Found');
       }
       challanDao = result;
     }
@@ -77,6 +81,7 @@ export class ChallanService {
       1,
       0,
       {
+        createdBy: userProfile.id,
         ids: [challanDto.loadId],
       },
       [],
@@ -84,13 +89,31 @@ export class ChallanService {
     if (!load) {
       throw new NotFoundException('Load Not Found');
     }
-    if (load.status == LoadStatus.BOOKED) {
-      throw new BadRequestException('Load Already Been Booked');
-    }
     challanDao.loadId = load.id;
+    const [booking] = await this.bookingService.getBookings(
+      1,
+      0,
+      {
+        ids: [challanDto.bookingId],
+      },
+      [],
+    );
+    if (!booking) {
+      throw new NotFoundException('booking not found');
+    }
     challanDao.bookingId = challanDto.bookingId;
+
+    challanDao.challanLineItems = challanDto.challanLineItems.map(i => {
+      const lineItem = new ChallanLineItem();
+      lineItem.productName = i.productName;
+      lineItem.uom = i.uom;
+      lineItem.value = i.value;
+      return lineItem;
+    });
+    //todo: driver flow
     challanDao.driverId = challanDto.driverId;
-    challanDao.vehicle = challanDao.vehicle;
+    challanDao.vehicle = challanDto.vehicle;
+    challanDao.status = ChallanEnum.GENERATED;
     try {
       return await this.challan.save(challanDao);
     } catch (error) {

@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { sendError } from '../common/error.service';
 import { fillNull, RepoUtils } from '../common/utils/repository';
-import { In, Repository } from 'typeorm';
+import { In, Repository, UpdateResult } from 'typeorm';
 import { Load } from './entities/load.entity';
 import { BookLoadDto, LoadDto } from './dto/load.dto';
 import { LoadAddressService } from './load-address.service';
@@ -52,10 +52,17 @@ export class LoadService {
       { confirmation: true },
     );
     if (updatedBooking) {
-      await this.load.update({ id: load.id }, { status: LoadStatus.BOOKED });
+      // await this.load.update({ id: load.id }, { status: LoadStatus.BOOKED });
       return true;
     }
     return false;
+  }
+
+  async updateLoadStatus(
+    id: string,
+    status: LoadStatus,
+  ): Promise<UpdateResult> {
+    return await this.load.update({ id }, { status });
   }
   async getLoads(
     take: number,

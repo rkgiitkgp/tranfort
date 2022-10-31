@@ -17,11 +17,24 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     enable();
-    await app.listen(3000);
+    await app.listen(4000);
     process.env.baseUrl = await app.getUrl();
   }, 500000);
   it('transporter', async done => {
-    //sign-up: Transporter
+    // sign-up: Transporter
+    // create load
+    // can see only his loads
+    // also can see booking raised by truck owner
+
+    // sigin-up Truck owner
+    // can see all of the loads
+    // can apply to a multiple loads
+    // cannot apply twice to a single load
+
+    // sign-in transporter
+    // get his load details and then can approve multiple booking
+    // generate challan against a load & booking
+    // challan status -> material dispatched
     const transporter = 'Transporter' + utils.randomNum();
     const credentials = {
       name: transporter,
@@ -95,7 +108,8 @@ describe('AppController (e2e)', () => {
     );
     expect(loadList[0].length).toBe(1);
     expect(loadList[1]).toBeInstanceOf(Object);
-    //signUp: Truck Owner
+
+    //signUp: Truck Owner 1
     const truckOwner = 'Truckowner' + utils.randomNum();
     const credentials2 = {
       name: truckOwner,
@@ -136,6 +150,48 @@ describe('AppController (e2e)', () => {
         ],
       },
     );
+
+    //signUp: Truck Owner 2
+    const truckOwner2 = 'Truckowner2' + utils.randomNum();
+    const credTruckOwner2 = {
+      name: truckOwner2,
+      email: truckOwner2 + '@mail.com',
+      phoneNumber: '963456' + utils.randomNum(),
+      password: 'Truckowner@1234',
+      type: 'truck_owner',
+    };
+    await setCredentials(credTruckOwner2);
+    const publicLoadList2 = await utils.postAndGetResponse(
+      `/load/list?limit=10&page=1`,
+      {
+        orderBy: [
+          {
+            name: 'createdAt',
+            order: 'DESC',
+          },
+        ],
+      },
+    );
+    const loadById_truckOwner2 = await utils.getResponse(
+      `/load/${commonIds.loadId}`,
+    );
+
+    const postBooking2 = await utils.postAndGetResponse(`/booking`, {
+      loadId: loadById.id,
+      comments: 'I want this load as soon as possible',
+    });
+
+    const updatedPublicLoadList2 = await utils.postAndGetResponse(
+      `/load/list?limit=10&page=1`,
+      {
+        orderBy: [
+          {
+            name: 'createdAt',
+            order: 'DESC',
+          },
+        ],
+      },
+    );
     // (logged in into transporter tenant)
     const transporterSignIn = await utils.postAndGetResponse('/auth/signin', {
       phoneNumber: credentials.phoneNumber,
@@ -155,6 +211,64 @@ describe('AppController (e2e)', () => {
         ],
       },
     );
+    // total 2 booking raised
+    expect(bookingAppliedList[0][0].bookings.length).toBe(2);
+
+    //first booking assigned
+    await utils.postAndGetResponse(`/load/assign-load`, {
+      loadId: loadById.id,
+      bookingId: postBooking.id,
+    });
+
+    //second booking assigned
+    await utils.postAndGetResponse(`/load/assign-load`, {
+      loadId: loadById.id,
+      bookingId: postBooking2.id,
+    });
+
+    const updateLoadStatus = await utils.postAndGetResponse(
+      `/load/update-status/${loadById.id}`,
+      {},
+    );
+
+    const loadById2 = await utils.getResponse(`/load/${commonIds.loadId}`);
+    expect(loadById2.status).toBe('booked');
+
+    //generate chllan
+    const challanLineItem = [
+      {
+        productName: 'Test',
+        sku: 'Test',
+        uom: 'tonnes',
+        value: 10,
+      },
+    ];
+
+    const vehicle = {
+      vehicleNumber: 'asdga',
+      fuelType: 'asdfa',
+      model: 'asdgas',
+      capacity: 'asfga',
+    };
+
+    // challan booking 1
+    const challan1 = await utils.postAndGetResponse('/challan', {
+      challanLineItems: challanLineItem,
+      loadId: loadById2.id,
+      bookingId: postBooking.id,
+      driverId: loadById.id,
+      vehicle,
+    });
+
+    // challan booking 1
+    const challan2 = await utils.postAndGetResponse('/challan', {
+      loadId: loadById2.id,
+      bookingId: postBooking2.id,
+      driverId: loadById2.id,
+      vehicle,
+      challanLineItems: challanLineItem,
+    });
+
     done();
   });
   afterAll(async () => await app.close());
