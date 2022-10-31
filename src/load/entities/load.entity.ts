@@ -1,13 +1,22 @@
 import { PlatformEntity } from '../../common/platform.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { LoadStatus, VehicleRequirement } from '../constant';
 import { LineItem } from './line-item.entity';
 import { LoadAddress } from './load-address.entity';
 import { Booking } from './booking.entity';
 import { User } from '../../users/entities/user.entity';
+import { Challan } from './challan.entity';
 
 @Entity('load')
 export class Load extends PlatformEntity {
+  //Truck Owner
   @ManyToOne(
     () => User,
     user => user.loads,
@@ -80,4 +89,10 @@ export class Load extends PlatformEntity {
 
   @Column({ nullable: true })
   additionalNotes: string;
+
+  @OneToMany(
+    () => Challan,
+    challan => challan.load,
+  )
+  challans: Challan[];
 }

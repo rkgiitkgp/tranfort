@@ -1,25 +1,6 @@
+import { AddressDto } from '../../common/dto/address.dto';
 import { Type } from 'class-transformer';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
-
-export class CompanyAddressDto {
-  @IsOptional()
-  @IsUUID()
-  id?: string;
-
-  @IsNotEmpty()
-  @IsString()
-  address: string;
-
-  @IsOptional()
-  @IsUUID()
-  zipcodeId?: string;
-}
+import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 
 export class CompanyDto {
   @IsNotEmpty()
@@ -44,6 +25,6 @@ export class CompanyDto {
 
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => CompanyAddressDto)
-  companyAddress: CompanyAddressDto;
+  @Type(() => AddressDto)
+  companyAddress: AddressDto;
 }

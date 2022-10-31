@@ -73,15 +73,6 @@ export const commonData = async credentials => {
     code: `123${utils.randomNum()}`,
     cityId: commonIds.cityId,
   });
-  // commonIds.vehicleId = await utils.postAndGetId('/vehicle', {
-  //   vehicleNumber: '1234' + utils.randomInt(),
-  //   fuelType: 'Petrol',
-  //   model: 'Truck',
-  //   capacity: '100 Ton',
-  //   age: '2 years',
-  //   category: 'Test',
-  //   containerType: 'test',
-  // });
 
   return commonIds;
 };

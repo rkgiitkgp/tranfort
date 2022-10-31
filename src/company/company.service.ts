@@ -4,8 +4,9 @@ import { fillNull } from '../common/utils/repository';
 import { In, Repository } from 'typeorm';
 import { CompanyDto } from './dto/company.dto';
 import { Company } from './entities/company.entity';
-import { CompanyAddress } from './entities/company-address.entity';
+import { Address } from '../common/entities/address.entity';
 import { ZipcodeService } from '../state-city-zipcode/zipcode.service';
+import { AddressType } from '../common/constant';
 
 export class CompanyService {
   constructor(
@@ -53,7 +54,7 @@ export class CompanyService {
     companyDao.category = companyDto.category;
     companyDao.description = companyDto.description;
     companyDao.panNumber = companyDto.panNumber;
-    const companyAddress = new CompanyAddress();
+    const companyAddress = new Address();
     companyAddress.addressName = companyDto.companyAddress.address;
     const [zipcode] = await this.zipcodeService.getZipcode(
       1,
@@ -69,9 +70,16 @@ export class CompanyService {
     companyAddress.cityId = zipcode.cityId;
     companyAddress.stateId = zipcode.city.stateId;
     companyAddress.zipcodeId = zipcode.id;
-    companyDao.companyAddresses = [companyAddress];
 
-    return await this.company.save(companyDao);
+    try {
+      const company = await this.company.save(companyDao);
+      if (company) {
+        companyAddress.type = AddressType.Company_Address;
+        companyAddress.entityId = company.id;
+        await companyAddress.save();
+      }
+      return company;
+    } catch (error) {}
   }
 
   async deleteCompany(ids: string[]) {

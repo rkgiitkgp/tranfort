@@ -6,6 +6,7 @@ import { User } from '../../users/entities/user.entity';
 @Entity('booking')
 @Unique(['loadId', 'createdBy'])
 export class Booking extends PlatformEntity {
+  //transporter
   @ManyToOne(
     () => User,
     user => user.bookings,

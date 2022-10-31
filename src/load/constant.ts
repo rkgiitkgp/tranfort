@@ -35,3 +35,9 @@ export interface VehicleRequirement {
   subVehicleType: SubVehicleType;
   numberOfWheels: NumberOfWheels[];
 }
+
+export enum ChallanEnum {
+  GENERATED = 'generated',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+}

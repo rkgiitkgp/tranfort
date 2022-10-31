@@ -12,14 +12,30 @@ import { LoadAddressController } from './load-address.controller';
 import { LoadAddressService } from './load-address.service';
 import { LoadController } from './load.controller';
 import { LoadService } from './load.service';
+import { Challan } from './entities/challan.entity';
+import { ChallanController } from './challan.controller';
+import { ChallanService } from './challan.service';
+import { ChallanLineItem } from './entities/challan-line-item.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Load, LoadAddress, LineItem, Booking]),
+    TypeOrmModule.forFeature([
+      Load,
+      LoadAddress,
+      LineItem,
+      Booking,
+      Challan,
+      ChallanLineItem,
+    ]),
     StateCityZipcodeModule,
     UserModule,
   ],
-  controllers: [LoadAddressController, LoadController, BookingController],
-  providers: [LoadService, LoadAddressService, BookingService],
+  controllers: [
+    LoadAddressController,
+    LoadController,
+    BookingController,
+    ChallanController,
+  ],
+  providers: [LoadService, LoadAddressService, BookingService, ChallanService],
 })
 export class LoadModule {}

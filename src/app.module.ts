@@ -13,7 +13,6 @@ import { AllExceptionsFilter } from './common/http-exception.filter';
 import { HttpModule } from '@nestjs/axios';
 import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
-import { VehicleModule } from './vehicle/vehicle.module';
 import { LoadModule } from './load/load.module';
 import { StateCityZipcodeModule } from './state-city-zipcode/state-city-zipcode.module';
 import { CompanyModule } from './company/company.module';
@@ -67,7 +66,6 @@ import { CompanyModule } from './company/company.module';
     UserModule,
     ConfigModule.forRoot({ isGlobal: true }),
     CommonModule,
-    VehicleModule,
     LoadModule,
     StateCityZipcodeModule,
     CompanyModule,
